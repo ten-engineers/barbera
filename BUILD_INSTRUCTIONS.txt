@@ -1,0 +1,26 @@
+=== Build and Install Instructions ===
+
+Your OnePlus 7T is connected and ready!
+
+Run these commands in your terminal (where Flutter is available):
+
+1. Navigate to project:
+   cd /Users/pavelbohovin/www/barbera
+
+2. Install dependencies:
+   flutter pub get
+
+3. Generate Hive adapters (REQUIRED):
+   flutter pub run build_runner build --delete-conflicting-outputs
+
+4. Verify device:
+   flutter devices
+   (Should show: HD1903 or OnePlus 7T)
+
+5. Build and install:
+   flutter run --release
+
+Or use the automated script:
+   ./install_app.sh
+
+The app will build and install on your OnePlus 7T automatically.
