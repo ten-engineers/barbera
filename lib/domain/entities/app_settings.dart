@@ -4,7 +4,7 @@ class AppSettings {
 
   AppSettings({
     this.nativeLanguage = 'English',
-    this.learningLanguage = 'Spanish',
+    this.learningLanguage = 'Romanian',
   });
 
   AppSettings copyWith({
