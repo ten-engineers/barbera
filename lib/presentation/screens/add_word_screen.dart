@@ -1,7 +1,10 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/flashcard.dart';
+import '../../domain/services/word_dictionary_service.dart';
 import '../providers/flashcard_provider.dart';
+import '../providers/settings_provider.dart';
 
 class AddWordScreen extends ConsumerStatefulWidget {
   const AddWordScreen({super.key});
@@ -43,6 +46,51 @@ class _AddWordScreenState extends ConsumerState<AddWordScreen> {
       _wordController.clear();
       _translationController.clear();
       _exampleController.clear();
+    }
+  }
+
+  Future<void> _generateRandomWords() async {
+    // Watch settings to get latest values
+    final settingsAsync = await ref.read(appSettingsProvider.future);
+    
+    final words = WordDictionaryService.getRandomWords(
+      settingsAsync.nativeLanguage,
+      settingsAsync.learningLanguage,
+      3,
+    );
+
+    if (words.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('No words available for ${settingsAsync.nativeLanguage} → ${settingsAsync.learningLanguage}. Try English → ${settingsAsync.learningLanguage} or add words manually.'),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+      return;
+    }
+
+    final notifier = ref.read(flashcardNotifierProvider.notifier);
+    int addedCount = 0;
+
+    for (final wordData in words) {
+      final flashcard = Flashcard(
+        word: wordData['word']!,
+        translation: wordData['translation']!,
+        example: wordData['example'],
+      );
+      notifier.addFlashcard(flashcard);
+      addedCount++;
+    }
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('$addedCount random word${addedCount > 1 ? 's' : ''} added successfully!'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
     }
   }
 
@@ -101,6 +149,16 @@ class _AddWordScreenState extends ConsumerState<AddWordScreen> {
                 maxLines: 3,
               ),
               const SizedBox(height: 24),
+              OutlinedButton.icon(
+                onPressed: _generateRandomWords,
+                icon: const Icon(Icons.auto_awesome),
+                label: const Text('Generate 3 Random Words'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  side: BorderSide(color: Colors.blue.shade300),
+                ),
+              ),
+              const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _saveFlashcard,
                 style: ElevatedButton.styleFrom(

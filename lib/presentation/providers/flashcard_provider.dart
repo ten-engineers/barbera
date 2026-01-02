@@ -28,6 +28,16 @@ final allFlashcardsProvider = FutureProvider<List<Flashcard>>((ref) async {
   return await repository.getAllFlashcards();
 });
 
+final archivedFlashcardsProvider = FutureProvider<List<Flashcard>>((ref) async {
+  final repository = ref.watch(flashcardRepositoryProvider);
+  return await repository.getArchivedFlashcards();
+});
+
+final knownFlashcardsProvider = FutureProvider<List<Flashcard>>((ref) async {
+  final repository = ref.watch(flashcardRepositoryProvider);
+  return await repository.getKnownFlashcards();
+});
+
 final flashcardNotifierProvider = StateNotifierProvider<FlashcardNotifier, AsyncValue<List<Flashcard>>>((ref) {
   return FlashcardNotifier(ref);
 });
@@ -66,6 +76,14 @@ class FlashcardNotifier extends StateNotifier<AsyncValue<List<Flashcard>>> {
   Future<void> archiveFlashcard(Flashcard flashcard) async {
     final repository = _ref.read(flashcardRepositoryProvider);
     await repository.archiveFlashcard(flashcard.id);
+    _ref.invalidate(archivedFlashcardsProvider);
+    _loadFlashcards();
+  }
+
+  Future<void> unarchiveFlashcard(Flashcard flashcard) async {
+    final repository = _ref.read(flashcardRepositoryProvider);
+    await repository.unarchiveFlashcard(flashcard.id);
+    _ref.invalidate(archivedFlashcardsProvider);
     _loadFlashcards();
   }
 

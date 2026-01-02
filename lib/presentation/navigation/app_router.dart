@@ -1,7 +1,11 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../screens/practice_screen.dart';
 import '../screens/add_word_screen.dart';
 import '../screens/stats_screen.dart';
+import '../screens/archived_cards_screen.dart';
+import '../screens/known_cards_screen.dart';
+import '../screens/settings_screen.dart';
 import '../widgets/bottom_nav_bar.dart';
 
 final appRouter = GoRouter(
@@ -26,6 +30,21 @@ final appRouter = GoRouter(
       builder: (context, state) => _ScaffoldWithNavBar(
         child: const StatsScreen(),
         currentLocation: '/stats',
+      ),
+    ),
+    GoRoute(
+      path: '/archived',
+      builder: (context, state) => const ArchivedCardsScreen(),
+    ),
+    GoRoute(
+      path: '/known',
+      builder: (context, state) => const KnownCardsScreen(),
+    ),
+    GoRoute(
+      path: '/settings',
+      builder: (context, state) => _ScaffoldWithNavBar(
+        child: const SettingsScreen(),
+        currentLocation: '/settings',
       ),
     ),
   ],

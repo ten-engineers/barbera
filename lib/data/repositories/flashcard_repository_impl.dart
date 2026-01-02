@@ -33,6 +33,29 @@ class FlashcardRepositoryImpl implements FlashcardRepository {
   }
 
   @override
+  Future<List<Flashcard>> getArchivedFlashcards() async {
+    final box = await _box;
+    return box.values
+        .where((model) => model.isArchived)
+        .map((model) => model.toEntity())
+        .toList()
+      ..sort((a, b) => b.lastReviewed.compareTo(a.lastReviewed));
+  }
+
+  @override
+  Future<List<Flashcard>> getKnownFlashcards() async {
+    final box = await _box;
+    return box.values
+        .where((model) => 
+            !model.isArchived && 
+            model.reviewCount > 0 &&
+            model.easeFactor >= 2.5)
+        .map((model) => model.toEntity())
+        .toList()
+      ..sort((a, b) => b.reviewCount.compareTo(a.reviewCount));
+  }
+
+  @override
   Future<Flashcard?> getFlashcardById(String id) async {
     final box = await _box;
     final model = box.get(id);
@@ -59,6 +82,14 @@ class FlashcardRepositoryImpl implements FlashcardRepository {
     final flashcard = await getFlashcardById(id);
     if (flashcard != null) {
       await saveFlashcard(flashcard.copyWith(isArchived: true));
+    }
+  }
+
+  @override
+  Future<void> unarchiveFlashcard(String id) async {
+    final flashcard = await getFlashcardById(id);
+    if (flashcard != null) {
+      await saveFlashcard(flashcard.copyWith(isArchived: false));
     }
   }
 
