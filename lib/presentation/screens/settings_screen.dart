@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/app_settings.dart';
 import '../providers/settings_provider.dart';
+import '../widgets/version_badge.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -42,6 +43,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       appBar: AppBar(
         title: const Text('Settings'),
         elevation: 0,
+        actions: const [
+          VersionBadge(),
+        ],
       ),
       body: settingsAsync.when(
         data: (settings) {

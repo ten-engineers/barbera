@@ -48,11 +48,15 @@ class _FlashcardWidgetState extends State<FlashcardWidget>
   }
 
   void _handleTap() {
-    if (!_isFlipped && !_isDragging) {
+    if (!_isDragging) {
       setState(() {
-        _isFlipped = true;
+        _isFlipped = !_isFlipped;
       });
-      _flipController.forward();
+      if (_isFlipped) {
+        _flipController.forward();
+      } else {
+        _flipController.reverse();
+      }
       widget.onTap?.call();
     }
   }

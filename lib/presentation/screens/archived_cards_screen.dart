@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/flashcard.dart';
 import '../providers/flashcard_provider.dart';
+import '../widgets/version_badge.dart';
 
 class ArchivedCardsScreen extends ConsumerWidget {
   const ArchivedCardsScreen({super.key});
@@ -15,6 +16,9 @@ class ArchivedCardsScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Archived Cards'),
         elevation: 0,
+        actions: const [
+          VersionBadge(),
+        ],
       ),
       body: archivedAsync.when(
         data: (flashcards) {

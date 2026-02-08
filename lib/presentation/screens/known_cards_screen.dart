@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/flashcard.dart';
 import '../providers/flashcard_provider.dart';
+import '../widgets/version_badge.dart';
 
 class KnownCardsScreen extends ConsumerWidget {
   const KnownCardsScreen({super.key});
@@ -14,6 +15,9 @@ class KnownCardsScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Known Cards'),
         elevation: 0,
+        actions: const [
+          VersionBadge(),
+        ],
       ),
       body: knownAsync.when(
         data: (flashcards) {

@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/flashcard.dart';
 import '../../domain/services/word_dictionary_service.dart';
+import '../../domain/services/translation_service.dart';
 import '../providers/flashcard_provider.dart';
 import '../providers/settings_provider.dart';
+import '../widgets/version_badge.dart';
 
 class AddWordScreen extends ConsumerStatefulWidget {
   const AddWordScreen({super.key});
@@ -18,6 +20,7 @@ class _AddWordScreenState extends ConsumerState<AddWordScreen> {
   final _wordController = TextEditingController();
   final _translationController = TextEditingController();
   final _exampleController = TextEditingController();
+  bool _isTranslating = false;
 
   @override
   void dispose() {
@@ -46,6 +49,71 @@ class _AddWordScreenState extends ConsumerState<AddWordScreen> {
       _wordController.clear();
       _translationController.clear();
       _exampleController.clear();
+    }
+  }
+
+  Future<void> _translateWord() async {
+    final word = _wordController.text.trim();
+    if (word.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a word first')),
+      );
+      return;
+    }
+
+    final settings = await ref.read(appSettingsProvider.future);
+
+    // Only show translation for English -> Romanian
+    if (settings.nativeLanguage != 'English' || settings.learningLanguage != 'Romanian') {
+      return;
+    }
+
+    setState(() {
+      _isTranslating = true;
+    });
+
+    try {
+      final translation = await TranslationService.translate(
+        text: word,
+        from: TranslationService.getLanguageCode(settings.nativeLanguage),
+        to: TranslationService.getLanguageCode(settings.learningLanguage),
+      );
+
+      if (mounted) {
+        if (translation != null && translation.isNotEmpty) {
+          setState(() {
+            _translationController.text = translation;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Translation completed!'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Translation failed. Please try again.'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Translation error: ${e.toString()}'),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isTranslating = false;
+        });
+      }
     }
   }
 
@@ -96,10 +164,15 @@ class _AddWordScreenState extends ConsumerState<AddWordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final settingsAsync = ref.watch(appSettingsProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Word'),
         elevation: 0,
+        actions: const [
+          VersionBadge(),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -124,19 +197,68 @@ class _AddWordScreenState extends ConsumerState<AddWordScreen> {
                 textCapitalization: TextCapitalization.none,
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: _translationController,
-                decoration: const InputDecoration(
-                  labelText: 'Translation',
-                  hintText: 'Enter the translation',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Please enter a translation';
-                  }
-                  return null;
+              settingsAsync.when(
+                data: (settings) {
+                  final showTranslateButton = 
+                      settings.nativeLanguage == 'English' && 
+                      settings.learningLanguage == 'Romanian';
+                  
+                  return TextFormField(
+                    controller: _translationController,
+                    decoration: InputDecoration(
+                      labelText: 'Translation',
+                      hintText: 'Enter the translation',
+                      border: const OutlineInputBorder(),
+                      suffixIcon: showTranslateButton
+                          ? IconButton(
+                              icon: _isTranslating
+                                  ? const SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(strokeWidth: 2),
+                                    )
+                                  : const Icon(Icons.auto_awesome, color: Colors.blue),
+                              onPressed: _isTranslating ? null : _translateWord,
+                              tooltip: 'Auto-translate',
+                            )
+                          : null,
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please enter a translation';
+                      }
+                      return null;
+                    },
+                  );
                 },
+                loading: () => TextFormField(
+                  controller: _translationController,
+                  decoration: const InputDecoration(
+                    labelText: 'Translation',
+                    hintText: 'Enter the translation',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Please enter a translation';
+                    }
+                    return null;
+                  },
+                ),
+                error: (_, __) => TextFormField(
+                  controller: _translationController,
+                  decoration: const InputDecoration(
+                    labelText: 'Translation',
+                    hintText: 'Enter the translation',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Please enter a translation';
+                    }
+                    return null;
+                  },
+                ),
               ),
               const SizedBox(height: 16),
               TextFormField(

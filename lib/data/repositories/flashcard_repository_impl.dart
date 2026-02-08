@@ -19,6 +19,15 @@ class FlashcardRepositoryImpl implements FlashcardRepository {
   }
 
   @override
+  Future<List<Flashcard>> getAllFlashcardsIncludingArchived() async {
+    final box = await _box;
+    return box.values
+        .map((model) => model.toEntity())
+        .toList()
+      ..sort((a, b) => b.lastReviewed.compareTo(a.lastReviewed));
+  }
+
+  @override
   Future<List<Flashcard>> getDueFlashcards() async {
     final box = await _box;
     final now = DateTime.now();

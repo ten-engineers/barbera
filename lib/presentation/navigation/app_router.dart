@@ -6,6 +6,8 @@ import '../screens/stats_screen.dart';
 import '../screens/archived_cards_screen.dart';
 import '../screens/known_cards_screen.dart';
 import '../screens/settings_screen.dart';
+import '../screens/all_words_screen.dart';
+import '../screens/word_detail_screen.dart';
 import '../widgets/bottom_nav_bar.dart';
 
 final appRouter = GoRouter(
@@ -26,11 +28,25 @@ final appRouter = GoRouter(
       ),
     ),
     GoRoute(
+      path: '/all-words',
+      builder: (context, state) => _ScaffoldWithNavBar(
+        child: const AllWordsScreen(),
+        currentLocation: '/all-words',
+      ),
+    ),
+    GoRoute(
       path: '/stats',
       builder: (context, state) => _ScaffoldWithNavBar(
         child: const StatsScreen(),
         currentLocation: '/stats',
       ),
+    ),
+    GoRoute(
+      path: '/word-detail/:id',
+      builder: (context, state) {
+        final id = state.pathParameters['id']!;
+        return WordDetailScreen(flashcardId: id);
+      },
     ),
     GoRoute(
       path: '/archived',

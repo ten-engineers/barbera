@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/flashcard.dart';
 import '../providers/flashcard_provider.dart';
 import '../widgets/flashcard_widget.dart';
+import '../widgets/version_badge.dart';
 
 class PracticeScreen extends ConsumerWidget {
   const PracticeScreen({super.key});
@@ -16,6 +17,9 @@ class PracticeScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Practice'),
         elevation: 0,
+        actions: const [
+          VersionBadge(),
+        ],
       ),
       body: flashcardsAsync.when(
         data: (flashcards) {

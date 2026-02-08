@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/stats_provider.dart';
+import '../widgets/version_badge.dart';
 
 class StatsScreen extends ConsumerWidget {
   const StatsScreen({super.key});
@@ -15,6 +16,7 @@ class StatsScreen extends ConsumerWidget {
         title: const Text('Statistics'),
         elevation: 0,
         actions: [
+          const VersionBadge(),
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () => context.push('/settings'),

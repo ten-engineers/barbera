@@ -22,9 +22,12 @@ class BottomNavBar extends StatelessWidget {
             context.go('/add-word');
             break;
           case 2:
-            context.go('/stats');
+            context.go('/all-words');
             break;
           case 3:
+            context.go('/stats');
+            break;
+          case 4:
             context.go('/settings');
             break;
         }
@@ -38,6 +41,10 @@ class BottomNavBar extends StatelessWidget {
         BottomNavigationBarItem(
           icon: Icon(Icons.add_circle),
           label: 'Add Word',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.book),
+          label: 'All Words',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.bar_chart),
@@ -57,10 +64,12 @@ class BottomNavBar extends StatelessWidget {
         return 0;
       case '/add-word':
         return 1;
-      case '/stats':
+      case '/all-words':
         return 2;
-      case '/settings':
+      case '/stats':
         return 3;
+      case '/settings':
+        return 4;
       default:
         return 0;
     }

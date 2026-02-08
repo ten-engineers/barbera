@@ -1,7 +1,7 @@
 name: barbera
 description: A language learning app based on flashcards with spaced repetition
 publish_to: 'none'
-version: 1.0.1+2
+version: 1.0.2+3
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -23,6 +23,8 @@ dependencies:
   # Utilities
   intl: ^0.19.0
   uuid: ^4.2.1
+  package_info_plus: ^8.0.0
+  http: ^1.2.0
 
 dev_dependencies:
   flutter_test:

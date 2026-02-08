@@ -2,6 +2,7 @@ import '../entities/flashcard.dart';
 
 abstract class FlashcardRepository {
   Future<List<Flashcard>> getAllFlashcards();
+  Future<List<Flashcard>> getAllFlashcardsIncludingArchived();
   Future<List<Flashcard>> getDueFlashcards();
   Future<List<Flashcard>> getArchivedFlashcards();
   Future<List<Flashcard>> getKnownFlashcards();
